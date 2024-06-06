@@ -1,0 +1,72 @@
+.new-container {
+  max-width: 600px;
+  margin: 50px auto;
+  padding: 20px;
+  background-color: #f7f7f7;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.new-title {
+  margin-bottom: 20px;
+  font-size: 24px;
+  color: #333;
+}
+
+.new-form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.new-label {
+  font-size: 14px;
+  color: #555;
+  text-align: left;
+  margin-bottom: 5px;
+}
+
+.new-input,
+.new-select {
+  padding: 10px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  width: 100%;
+  outline: none;
+}
+
+.new-input:focus,
+.new-select:focus {
+  border-color: #007bff;
+}
+
+.new-checkbox {
+  align-self: start;
+  margin-top: 5px;
+}
+
+.new-button {
+  padding: 10px;
+  font-size: 16px;
+  color: #fff;
+  background-color: #007bff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 15px;
+}
+
+.new-button:hover {
+  background-color: #0056b3;
+}
+
+.new-button + .new-button {
+  margin-top: 10px;
+  background-color: #6c757d;
+}
+
+.new-button + .new-button:hover {
+  background-color: #5a6268;
+}
