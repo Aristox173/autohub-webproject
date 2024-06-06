@@ -1,0 +1,77 @@
+/* Center the login form on the page */
+.login-container {
+  max-width: 400px;
+  margin: 50px auto;
+  padding: 20px;
+  background-color: #f7f7f7;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+/* Style the heading */
+.login-container h1 {
+  margin-bottom: 20px;
+  font-size: 24px;
+  color: #333;
+}
+
+/* Style the form */
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+/* Style the input fields */
+.login-form input {
+  padding: 10px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  width: 100%;
+  outline: none;
+}
+
+/* Change border color on focus */
+.login-form input:focus {
+  border-color: #007bff;
+}
+
+/* Style the login button */
+.login-button {
+  padding: 10px;
+  font-size: 16px;
+  color: #fff;
+  background-color: #007bff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+/* Change background color on hover */
+.login-button:hover {
+  background-color: #0056b3;
+}
+
+/* Style the register button */
+.register-button {
+  margin-top: 20px;
+  padding: 10px;
+  font-size: 16px;
+  color: #007bff;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+/* Style the register link */
+.register-button a {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* Add underline on hover */
+.register-button:hover {
+  text-decoration: underline;
+}

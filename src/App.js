@@ -40,7 +40,7 @@ function App() {
             </Route>
             <Route path=":mechanicId">
               <Route
-                path="catalog"
+                path="selection"
                 element={
                   <RequireAuth>
                     <Selection />
