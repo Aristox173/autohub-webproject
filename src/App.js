@@ -6,6 +6,7 @@ import Login from "./views/Login";
 import List from "./views/supplier/List";
 import New from "./views/supplier/New";
 import Selection from "./views/mechanic/Selection";
+import Update from "./views/supplier/Update";
 
 const RequireAuth = ({ children }) => {
   const { currentUser } = useContext(AuthContext);
@@ -34,6 +35,14 @@ function App() {
                 element={
                   <RequireAuth>
                     <New />
+                  </RequireAuth>
+                }
+              />
+              <Route
+                path="update/:productId"
+                element={
+                  <RequireAuth>
+                    <Update />
                   </RequireAuth>
                 }
               />
