@@ -14,6 +14,11 @@ const Selection = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [results, setResults] = useState({
+    cheapest: null,
+    quality: null,
+    balanced: null,
+  });
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -113,12 +118,26 @@ const Selection = () => {
     console.log("Cheapest Option:");
     findCheapestOption(selectedItems, filteredProducts);
 
+    console.log("Balanced Option:");
+    findBalancedOption(selectedItems, filteredProducts);
+
     console.log("Quality Option:");
     findQualityOption(selectedItems, filteredProducts);
+
+    const cheapestResults = findCheapestOption(selectedItems, filteredProducts);
+    const qualityResults = findQualityOption(selectedItems, filteredProducts);
+    const balancedResults = findBalancedOption(selectedItems, filteredProducts);
+
+    setResults({
+      cheapest: cheapestResults,
+      quality: qualityResults,
+      balanced: balancedResults,
+    });
   };
 
   const findCheapestOption = (selectedItems, products) => {
     let totalCost = 0;
+    const details = [];
     selectedItems.forEach((item) => {
       let remainingQuantity = item.quantity;
       const matchingProducts = products
@@ -154,15 +173,11 @@ const Selection = () => {
           totalCost += cost;
           remainingQuantity -= availableQuantity;
 
-          console.log(
-            `Product for ${item.subcategory} in ${item.category}:`,
-            product
-          );
-          console.log(
-            `Cost for ${availableQuantity} x ${
-              product.productName
-            }: $${cost.toFixed(2)}`
-          );
+          details.push({
+            product,
+            quantity: availableQuantity,
+            cost,
+          });
         });
 
         if (remainingQuantity > 0) {
@@ -186,11 +201,12 @@ const Selection = () => {
       }
     });
 
-    console.log(`Total cost: $${totalCost.toFixed(2)}`);
+    return { details, totalCost };
   };
 
   const findQualityOption = (selectedItems, products) => {
     let totalCost = 0;
+    const details = [];
     selectedItems.forEach((item) => {
       let remainingQuantity = item.quantity;
       const matchingProducts = products
@@ -226,15 +242,11 @@ const Selection = () => {
           totalCost += cost;
           remainingQuantity -= availableQuantity;
 
-          console.log(
-            `Product for ${item.subcategory} in ${item.category}:`,
-            product
-          );
-          console.log(
-            `Cost for ${availableQuantity} x ${
-              product.productName
-            }: $${cost.toFixed(2)}`
-          );
+          details.push({
+            product,
+            quantity: availableQuantity,
+            cost,
+          });
         });
 
         if (remainingQuantity > 0) {
@@ -258,7 +270,75 @@ const Selection = () => {
       }
     });
 
-    console.log(`Total cost: $${totalCost.toFixed(2)}`);
+    return { details, totalCost };
+  };
+
+  const findBalancedOption = (selectedItems, products) => {
+    const maxQuality = 5; // Assuming the maximum quality is 5
+    const minPrice = Math.min(
+      ...products.map((product) => parseFloat(product.productPrice))
+    );
+
+    let totalCost = 0;
+    const details = [];
+    selectedItems.forEach((item) => {
+      let remainingQuantity = item.quantity;
+      const matchingProducts = products
+        .filter(
+          (product) =>
+            product.productCategory === item.category &&
+            product.productSubcategory === item.subcategory
+        )
+        .map((product) => {
+          const normalizedQuality =
+            parseInt(product.productQuality) / maxQuality;
+          const normalizedPrice = minPrice / parseFloat(product.productPrice);
+          const balancedScore = normalizedQuality * 0.5 + normalizedPrice * 0.5;
+          return { ...product, balancedScore };
+        })
+        .sort((a, b) => b.balancedScore - a.balancedScore); // Sort by balanced score in descending order
+
+      if (matchingProducts.length > 0) {
+        matchingProducts.forEach((product) => {
+          if (remainingQuantity <= 0) return;
+
+          const availableQuantity = Math.min(
+            remainingQuantity,
+            parseInt(product.productStock)
+          );
+          const cost = availableQuantity * parseFloat(product.productPrice);
+          totalCost += cost;
+          remainingQuantity -= availableQuantity;
+
+          details.push({
+            product,
+            quantity: availableQuantity,
+            cost,
+          });
+        });
+
+        if (remainingQuantity > 0) {
+          console.log(
+            `Still need ${remainingQuantity} more ${item.subcategory} in ${item.category}.`
+          );
+          const totalStock = matchingProducts.reduce(
+            (sum, product) => sum + parseInt(product.productStock),
+            0
+          );
+          if (totalStock < item.quantity) {
+            console.log(
+              `The required quantity of ${item.subcategory} exceeds the available stock in the entire database.`
+            );
+          }
+        }
+      } else {
+        console.log(
+          `No products found for ${item.subcategory} in ${item.category}.`
+        );
+      }
+    });
+
+    return { details, totalCost };
   };
 
   return (
@@ -280,6 +360,56 @@ const Selection = () => {
           <button className="analyse-button" onClick={handleAnalyseClick}>
             Analyse
           </button>
+
+          <div className="result-cards">
+            {results.cheapest && (
+              <div className="result-card">
+                <h3>Cheapest Option</h3>
+                <ul>
+                  {results.cheapest.details.map((item, index) => (
+                    <li key={index}>
+                      {item.quantity} x {item.product.productName} @ $
+                      {item.product.productPrice} each = ${item.cost.toFixed(2)}
+                    </li>
+                  ))}
+                </ul>
+                <p>Total: ${results.cheapest.totalCost.toFixed(2)}</p>
+                <button>Select</button>
+              </div>
+            )}
+
+            {results.quality && (
+              <div className="result-card">
+                <h3>Quality Option</h3>
+                <ul>
+                  {results.quality.details.map((item, index) => (
+                    <li key={index}>
+                      {item.quantity} x {item.product.productName} @ $
+                      {item.product.productPrice} each = ${item.cost.toFixed(2)}
+                    </li>
+                  ))}
+                </ul>
+                <p>Total: ${results.quality.totalCost.toFixed(2)}</p>
+                <button>Select</button>
+              </div>
+            )}
+
+            {results.balanced && (
+              <div className="result-card">
+                <h3>Balanced Option</h3>
+                <ul>
+                  {results.balanced.details.map((item, index) => (
+                    <li key={index}>
+                      {item.quantity} x {item.product.productName} @ $
+                      {item.product.productPrice} each = ${item.cost.toFixed(2)}
+                    </li>
+                  ))}
+                </ul>
+                <p>Total: ${results.balanced.totalCost.toFixed(2)}</p>
+                <button>Select</button>
+              </div>
+            )}
+          </div>
         </>
       )}
     </div>
