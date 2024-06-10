@@ -11,8 +11,6 @@ const categories = {
   Engine: ["Cylinder block", "Pistons", "Connecting rods"],
   "Electrical System": ["Starter Motor", "Battery", "Alternator"],
   Brakes: ["Brake Pads", "Brake Discs", "Brake Calipers"],
-  "Exhaust System": ["Exhaust Pipes", "Exhaust Manifolds", "Exhaust Gaskets"],
-  Tires: ["Tires", "Tire Valves", "Balancing Weights"],
 };
 
 const Update = () => {
