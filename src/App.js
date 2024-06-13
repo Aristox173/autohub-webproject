@@ -12,6 +12,8 @@ import Products from "./views/admin/Products";
 import Orders from "./views/admin/Orders";
 import NewProduct from "./views/admin/NewProduct";
 import UpdateProduct from "./views/admin/UpdateProduct";
+import NewUser from "./views/admin/NewUser";
+import UpdateUser from "./views/admin/UpdateUser";
 
 const RequireAuth = ({ children }) => {
   const { currentUser } = useContext(AuthContext);
@@ -27,14 +29,32 @@ function App() {
             <Route path="login" element={<Login />} />
             <Route path="register" element={<Register />} />
             <Route path="admin">
-              <Route
-                path="users"
-                element={
-                  <RequireAuth>
-                    <Users />
-                  </RequireAuth>
-                }
-              />
+              <Route path="users">
+                <Route
+                  index
+                  element={
+                    <RequireAuth>
+                      <Users />
+                    </RequireAuth>
+                  }
+                />
+                <Route
+                  path="new"
+                  element={
+                    <RequireAuth>
+                      <NewUser />
+                    </RequireAuth>
+                  }
+                />
+                <Route
+                  path="update/:productId"
+                  element={
+                    <RequireAuth>
+                      <UpdateUser />
+                    </RequireAuth>
+                  }
+                />
+              </Route>
               <Route path="products">
                 <Route
                   index

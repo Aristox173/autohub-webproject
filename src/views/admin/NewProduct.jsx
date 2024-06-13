@@ -207,7 +207,7 @@ const NewProduct = () => {
           Create
         </button>
       </form>
-      <button onClick={() => navigate(-1)} className="new-button">
+      <button onClick={() => navigate(-1)} className="login-button">
         Back
       </button>
     </div>

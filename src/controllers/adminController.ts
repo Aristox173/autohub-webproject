@@ -1,4 +1,4 @@
-import { db } from "../utils/firebase";
+import { auth, db } from "../utils/firebase";
 import {
   collection,
   getDocs,
@@ -10,9 +10,11 @@ import {
   addDoc,
   serverTimestamp,
   updateDoc,
+  setDoc,
 } from "firebase/firestore";
 import { Product } from "../models/product";
 import { User } from "../models/user";
+import { createUserWithEmailAndPassword } from "firebase/auth";
 
 export const addProduct = async (product: Product) => {
   try {
@@ -125,4 +127,45 @@ export const fetchSuppliers = async (): Promise<User[]> => {
     throw err;
   }
   return suppliers;
+};
+
+export const fetchAllUsers = async (): Promise<User[]> => {
+  const users: User[] = [];
+  try {
+    const querySnapshot = await getDocs(collection(db, "user"));
+    querySnapshot.forEach((doc) => {
+      const data = doc.data() as User;
+      const user: User = {
+        id: doc.id,
+        name: data.name,
+        email: data.email,
+        password: data.password,
+        isSupplier: data.isSupplier,
+      };
+      users.push(user);
+    });
+  } catch (err) {
+    console.error("Error fetching users: ", err);
+    throw err;
+  }
+  return users;
+};
+
+export const registerUser = async (userData: User) => {
+  try {
+    const userCredential = await createUserWithEmailAndPassword(
+      auth,
+      userData.email,
+      userData.password
+    );
+
+    await setDoc(doc(db, "user", userCredential.user.uid), {
+      ...userData,
+      timestamp: serverTimestamp(),
+    });
+
+    return userCredential.user;
+  } catch (error) {
+    throw error;
+  }
 };
