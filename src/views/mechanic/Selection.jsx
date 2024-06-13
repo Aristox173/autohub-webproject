@@ -378,22 +378,6 @@ const Selection = () => {
               </div>
             )}
 
-            {results.quality && (
-              <div className="result-card">
-                <h3>Quality Option</h3>
-                <ul>
-                  {results.quality.details.map((item, index) => (
-                    <li key={index}>
-                      {item.quantity} x {item.product.productName} @ $
-                      {item.product.productPrice} each = ${item.cost.toFixed(2)}
-                    </li>
-                  ))}
-                </ul>
-                <p>Total: ${results.quality.totalCost.toFixed(2)}</p>
-                <button>Select</button>
-              </div>
-            )}
-
             {results.balanced && (
               <div className="result-card">
                 <h3>Balanced Option</h3>
@@ -406,6 +390,22 @@ const Selection = () => {
                   ))}
                 </ul>
                 <p>Total: ${results.balanced.totalCost.toFixed(2)}</p>
+                <button>Select</button>
+              </div>
+            )}
+
+            {results.quality && (
+              <div className="result-card">
+                <h3>Quality Option</h3>
+                <ul>
+                  {results.quality.details.map((item, index) => (
+                    <li key={index}>
+                      {item.quantity} x {item.product.productName} @ $
+                      {item.product.productPrice} each = ${item.cost.toFixed(2)}
+                    </li>
+                  ))}
+                </ul>
+                <p>Total: ${results.quality.totalCost.toFixed(2)}</p>
                 <button>Select</button>
               </div>
             )}

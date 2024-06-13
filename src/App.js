@@ -7,6 +7,11 @@ import List from "./views/supplier/List";
 import New from "./views/supplier/New";
 import Selection from "./views/mechanic/Selection";
 import Update from "./views/supplier/Update";
+import Users from "./views/admin/Users";
+import Products from "./views/admin/Products";
+import Orders from "./views/admin/Orders";
+import NewProduct from "./views/admin/NewProduct";
+import UpdateProduct from "./views/admin/UpdateProduct";
 
 const RequireAuth = ({ children }) => {
   const { currentUser } = useContext(AuthContext);
@@ -21,6 +26,51 @@ function App() {
           <Route path="/">
             <Route path="login" element={<Login />} />
             <Route path="register" element={<Register />} />
+            <Route path="admin">
+              <Route
+                path="users"
+                element={
+                  <RequireAuth>
+                    <Users />
+                  </RequireAuth>
+                }
+              />
+              <Route path="products">
+                <Route
+                  index
+                  element={
+                    <RequireAuth>
+                      <Products />
+                    </RequireAuth>
+                  }
+                />
+                <Route
+                  path="new"
+                  element={
+                    <RequireAuth>
+                      <NewProduct />
+                    </RequireAuth>
+                  }
+                />
+                <Route
+                  path="update/:productId"
+                  element={
+                    <RequireAuth>
+                      <UpdateProduct />
+                    </RequireAuth>
+                  }
+                />
+              </Route>
+
+              <Route
+                path="orders"
+                element={
+                  <RequireAuth>
+                    <Orders />
+                  </RequireAuth>
+                }
+              />
+            </Route>
             <Route path=":supplierId">
               <Route
                 path="list"

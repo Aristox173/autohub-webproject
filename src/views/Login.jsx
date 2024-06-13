@@ -5,6 +5,9 @@ import { Link } from "react-router-dom";
 import { loginUser } from "../controllers/userController.ts";
 import "../styles/login.css";
 
+const ADMIN_EMAIL = "admin@email.com";
+const ADMIN_PASSWORD = "1234567890";
+
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -15,14 +18,19 @@ const Login = () => {
     e.preventDefault();
 
     try {
-      const { user, isSupplier } = await loginUser(email, password);
-
-      dispatch({ type: "LOGIN", payload: user });
-
-      if (isSupplier) {
-        navigate(`/${user.uid}/list`);
+      if (email === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
+        const adminUser = { email: ADMIN_EMAIL, uid: "admin" };
+        dispatch({ type: "LOGIN", payload: adminUser });
+        navigate("/admin/users");
       } else {
-        navigate(`/${user.uid}/selection`);
+        const { user, isSupplier } = await loginUser(email, password);
+        dispatch({ type: "LOGIN", payload: user });
+
+        if (isSupplier) {
+          navigate(`/${user.uid}/list`);
+        } else {
+          navigate(`/${user.uid}/selection`);
+        }
       }
     } catch (error) {
       console.log(error);
