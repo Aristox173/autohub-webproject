@@ -1,3 +1,14 @@
+# Cuentas
+## Supplier User
+email: supplier1@gmail.com
+password: 1234567890
+## Mechanic User
+email: mechanic1@gmail.com
+password: 1234567890
+## Admin User
+email: admin@email.com
+password: 1234567890
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
