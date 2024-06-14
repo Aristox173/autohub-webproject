@@ -1,6 +1,6 @@
 export interface OrderHeader {
-  id?: string;
-  orderDate: Date;
+  id: string;
   mechanicId: string;
-  mechanicName: string;
+  timestamp: any;
+  totalAmount: number;
 }

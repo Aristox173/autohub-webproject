@@ -30,7 +30,7 @@ const AdminSidebar = () => {
         <Link to="/admin/products">Manage Products</Link>
       </button>
       <button className="sidebar-button">
-        <Link to="/admin/orders">Manage Orders</Link>
+        <Link to="/admin/orders">View Profitable Orders</Link>
       </button>
       <button className="sidebar-button" onClick={handleLogout}>
         Logout
