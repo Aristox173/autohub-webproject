@@ -19,6 +19,7 @@ import { User } from "../models/user";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { OrderHeader } from "../models/orderHeader";
 import { OrderDetail } from "../models/orderDetail";
+import UserFactory from "../factories/UserFactory.ts";
 
 export const addProduct = async (product: Product) => {
   try {
@@ -139,13 +140,10 @@ export const fetchAllUsers = async (): Promise<User[]> => {
     const querySnapshot = await getDocs(collection(db, "user"));
     querySnapshot.forEach((doc) => {
       const data = doc.data() as User;
-      const user: User = {
-        id: doc.id,
-        name: data.name,
-        email: data.email,
-        password: data.password,
-        isSupplier: data.isSupplier,
-      };
+      const user = UserFactory.createUser({
+        ...data,
+        id: doc.id, // Agregamos 'id' solo una vez
+      });
       users.push(user);
     });
   } catch (err) {
@@ -163,8 +161,13 @@ export const registerUser = async (userData: User) => {
       userData.password
     );
 
-    await setDoc(doc(db, "user", userCredential.user.uid), {
+    const newUser = UserFactory.createUser({
       ...userData,
+      id: userCredential.user.uid, // Agregamos 'id' solo una vez
+    });
+
+    await setDoc(doc(db, "user", newUser.id), {
+      ...newUser,
       timestamp: serverTimestamp(),
     });
 
@@ -173,62 +176,6 @@ export const registerUser = async (userData: User) => {
     throw error;
   }
 };
-
-// Fetch orders within a date range
-/*export const fetchOrdersByDateRange = async (
-  startDate: Date,
-  endDate: Date
-): Promise<{ header: OrderHeader; details: OrderDetail[] }[]> => {
-  try {
-    const startTimestamp = Timestamp.fromDate(startDate);
-    const endTimestamp = Timestamp.fromDate(endDate);
-
-    //Obtener las ordenes
-    const ordersQuery = query(
-      collection(db, "orderHeader"),
-      where("timestamp", ">=", startTimestamp),
-      where("timestamp", "<=", endTimestamp),
-      orderBy("timestamp")
-    );
-
-    //Documentos que Coinciden
-    const orderHeadersSnapshot = await getDocs(ordersQuery);
-
-    // Mapea los documentos
-    const orders = await Promise.all(
-      orderHeadersSnapshot.docs.map(async (orderHeaderDoc) => {
-        // Datos encabezado
-        const orderHeaderData = orderHeaderDoc.data() as OrderHeader;
-
-        //Detalles del pedido que coinciden con el orderId del encabezado
-        const orderDetailsSnapshot = await getDocs(
-          query(
-            collection(db, "orderDetail"),
-            where("orderId", "==", orderHeaderDoc.id)
-          )
-        );
-        const orderDetails = orderDetailsSnapshot.docs.map((doc) => ({
-          ...(doc.data() as OrderDetail),
-          id: doc.id,
-          productPrice: parseFloat(doc.data().productPrice), // Asegúrate de convertir productPrice a número
-        }));
-
-        return {
-          header: {
-            ...orderHeaderData,
-            id: orderHeaderDoc.id, // Incluimos el id autogenerado
-          },
-          details: orderDetails,
-        };
-      })
-    );
-
-    return orders;
-  } catch (error) {
-    console.error("Error fetching orders by date range: ", error);
-    throw new Error("Failed to fetch orders. Please try again.");
-  }
-};*/
 
 export const fetchOrdersByDateRange = async (
   startDate: Date,
@@ -280,41 +227,6 @@ export const fetchOrdersByDateRange = async (
     throw new Error("Failed to fetch orders. Please try again.");
   }
 };
-
-// Calculate profit for each order and return the one with the highest profit
-/*export const calculateHighestProfit = (
-  orders: { header: OrderHeader; details: OrderDetail[] }[]
-): { orderId: string; profit: number; details: OrderDetail[] } => {
-  // Reduce la lista para encontrar el pedido con el mayor beneficio
-  const highestProfitOrder = orders.reduce<{
-    orderId: string;
-    profit: number;
-    details: OrderDetail[];
-  } | null>((maxOrder, currentOrder) => {
-    // Calcula el costo total del pedido actual sumando el precio del producto multiplicado por la cantidad
-    const totalCost = currentOrder.details.reduce(
-      (sum, detail) => sum + detail.productPrice * detail.quantity,
-      0
-    );
-    const profit = totalCost; // Usamos el total cost como profit directamente para calcular el total correctamente
-
-    if (!maxOrder || profit > maxOrder.profit) {
-      return {
-        orderId: currentOrder.header.id,
-        profit: profit,
-        details: currentOrder.details, // Incluimos los detalles del pedido
-      };
-    }
-
-    return maxOrder;
-  }, null);
-
-  if (!highestProfitOrder) {
-    throw new Error("No orders found.");
-  }
-
-  return highestProfitOrder;
-};*/
 
 export const calculateHighestProfit = (
   orders: { header: OrderHeader; details: OrderDetail[] }[]
