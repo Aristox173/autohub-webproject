@@ -11,8 +11,8 @@ import { db } from "../utils/firebase";
 import { Product } from "../models/product";
 import { SelectedItem } from "../models/SelectedItem";
 import { AnalysisResult } from "../models/analysisResult";
-import { OrderDetail } from "../models/orderDetail";
-import { OrderHeader } from "../models/orderHeader";
+import { OrderDetail } from "../models/orderDetail.ts";
+import { OrderHeader } from "../models/orderHeader.ts";
 
 export const fetchProducts = async (): Promise<Product[]> => {
   try {
@@ -235,30 +235,45 @@ export const createOrder = async (
   orderDetails: OrderDetail[]
 ) => {
   try {
-    // Primero, crea el documento de encabezado de pedido
+    // Primero, crea el objeto de encabezado de pedido
+    const orderHeader = new OrderHeader("", mechanicId, serverTimestamp(), 0);
+
+    // Crea el documento de encabezado de pedido en Firestore
     const orderHeaderRef = await addDoc(collection(db, "orderHeader"), {
-      mechanicId,
-      timestamp: serverTimestamp(),
+      mechanicId: orderHeader.mechanicId,
+      timestamp: orderHeader.timestamp,
+      totalAmount: orderHeader.getPrice(),
     });
 
     // Obtén el orderId generado automáticamente
-    const orderId = orderHeaderRef.id;
+    orderHeader.id = orderHeaderRef.id;
 
     // Actualiza el documento de encabezado de pedido con el orderId
-    await updateDoc(orderHeaderRef, { orderId });
+    await updateDoc(orderHeaderRef, { id: orderHeader.id });
 
     // Crea un lote para escribir los detalles del pedido
     const batch = writeBatch(db);
     orderDetails.forEach((detail) => {
+      detail.orderId = orderHeader.id; // Asegura que cada detalle tenga el orderId correcto
       const orderDetailRef = doc(collection(db, "orderDetail"));
       batch.set(orderDetailRef, {
-        ...detail,
-        orderId: orderId,
+        orderId: detail.orderId,
+        productName: detail.productName,
+        productPrice: detail.productPrice,
+        productSupplier: detail.productSupplier,
+        quantity: detail.quantity,
       });
     });
 
     // Confirma el lote
     await batch.commit();
+
+    // Calcula el monto total y actualiza el encabezado del pedido
+    const totalAmount = orderDetails.reduce(
+      (sum, detail) => sum + detail.getPrice(),
+      0
+    );
+    await updateDoc(orderHeaderRef, { totalAmount });
   } catch (error) {
     console.error("Error creating order: ", error);
     throw new Error("Failed to create order. Please try again.");
