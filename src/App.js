@@ -15,89 +15,23 @@ import UpdateProduct from "./views/admin/UpdateProduct";
 import NewUser from "./views/admin/NewUser";
 import UpdateUser from "./views/admin/UpdateUser";
 import MechanicOrders from "./views/mechanic/MechanicOrders";
-
-const RequireAuth = ({ children }) => {
-  const { currentUser } = useContext(AuthContext);
-  return currentUser ? children : <Navigate to="/login" />;
-};
+import RequireAuth from "./controllers/RequireAuth";
 
 function App() {
   return (
     <div className="App">
       <BrowserRouter>
         <Routes>
-          <Route path="/">
-            <Route path="login" element={<Login />} />
-            <Route path="register" element={<Register />} />
-            <Route path="admin">
-              <Route path="users">
-                <Route
-                  index
-                  element={
-                    <RequireAuth>
-                      <Users />
-                    </RequireAuth>
-                  }
-                />
-                <Route
-                  path="new"
-                  element={
-                    <RequireAuth>
-                      <NewUser />
-                    </RequireAuth>
-                  }
-                />
-                <Route
-                  path="update/:productId"
-                  element={
-                    <RequireAuth>
-                      <UpdateUser />
-                    </RequireAuth>
-                  }
-                />
-              </Route>
-              <Route path="products">
-                <Route
-                  index
-                  element={
-                    <RequireAuth>
-                      <Products />
-                    </RequireAuth>
-                  }
-                />
-                <Route
-                  path="new"
-                  element={
-                    <RequireAuth>
-                      <NewProduct />
-                    </RequireAuth>
-                  }
-                />
-                <Route
-                  path="update/:productId"
-                  element={
-                    <RequireAuth>
-                      <UpdateProduct />
-                    </RequireAuth>
-                  }
-                />
-              </Route>
-
+          <Route path="/" element={<Navigate to="/login" />} />
+          <Route path="login" element={<Login />} />
+          <Route path="register" element={<Register />} />
+          <Route path="admin">
+            <Route path="users">
               <Route
-                path="orders"
+                index
                 element={
                   <RequireAuth>
-                    <Orders />
-                  </RequireAuth>
-                }
-              />
-            </Route>
-            <Route path=":supplierId">
-              <Route
-                path="list"
-                element={
-                  <RequireAuth>
-                    <List />
+                    <Users />
                   </RequireAuth>
                 }
               />
@@ -105,7 +39,7 @@ function App() {
                 path="new"
                 element={
                   <RequireAuth>
-                    <New />
+                    <NewUser />
                   </RequireAuth>
                 }
               />
@@ -113,29 +47,90 @@ function App() {
                 path="update/:productId"
                 element={
                   <RequireAuth>
-                    <Update />
+                    <UpdateUser />
                   </RequireAuth>
                 }
               />
             </Route>
-            <Route path=":mechanicId">
+            <Route path="products">
               <Route
-                path="selection"
+                index
                 element={
                   <RequireAuth>
-                    <Selection />
+                    <Products />
                   </RequireAuth>
                 }
               />
               <Route
-                path="orders"
+                path="new"
                 element={
                   <RequireAuth>
-                    <MechanicOrders />
+                    <NewProduct />
+                  </RequireAuth>
+                }
+              />
+              <Route
+                path="update/:productId"
+                element={
+                  <RequireAuth>
+                    <UpdateProduct />
                   </RequireAuth>
                 }
               />
             </Route>
+
+            <Route
+              path="orders"
+              element={
+                <RequireAuth>
+                  <Orders />
+                </RequireAuth>
+              }
+            />
+          </Route>
+          <Route path=":supplierId">
+            <Route
+              path="list"
+              element={
+                <RequireAuth>
+                  <List />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="new"
+              element={
+                <RequireAuth>
+                  <New />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="update/:productId"
+              element={
+                <RequireAuth>
+                  <Update />
+                </RequireAuth>
+              }
+            />
+          </Route>
+          <Route path=":mechanicId">
+            <Route
+              path="selection"
+              element={
+                <RequireAuth>
+                  <Selection />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="orders"
+              element={
+                <RequireAuth>
+                  <MechanicOrders />
+                </RequireAuth>
+              }
+            />
           </Route>
         </Routes>
       </BrowserRouter>
